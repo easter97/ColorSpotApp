@@ -10,18 +10,21 @@ import UIKit
 
 //On the top of your swift
 extension UIImage {
-    func getPixelColor(pos: CGPoint) -> UIColor {
-        let provider = self.cgImage!.dataProvider
-        let providerData = provider!.data
-        let pixelData = providerData!
+    func getPixelColor(atLocation location: CGPoint, withFrameSize size: CGSize) -> UIColor {
+        let x: CGFloat = (self.size.width) * location.x / size.width
+        let y: CGFloat = (self.size.height) * location.y / size.height
+        
+        let pixelPoint: CGPoint = CGPoint(x: x, y: y)
+        
+        let pixelData = self.cgImage!.dataProvider!.data
         let data: UnsafePointer<UInt8> = CFDataGetBytePtr(pixelData)
         
-        let pixelInfo: Int = ((Int(self.size.width) * Int(pos.y)) + Int(pos.x)) * 4
+        let pixelIndex: Int = ((Int(self.size.width) * Int(pixelPoint.y)) + Int(pixelPoint.x)) * 4
         
-        let r = CGFloat(data[pixelInfo]) / CGFloat(255.0)
-        let g = CGFloat(data[pixelInfo+1]) / CGFloat(255.0)
-        let b = CGFloat(data[pixelInfo+2]) / CGFloat(255.0)
-        let a = CGFloat(data[pixelInfo+3]) / CGFloat(255.0)
+        let r = CGFloat(data[pixelIndex]) / CGFloat(255.0)
+        let g = CGFloat(data[pixelIndex+1]) / CGFloat(255.0)
+        let b = CGFloat(data[pixelIndex+2]) / CGFloat(255.0)
+        let a = CGFloat(data[pixelIndex+3]) / CGFloat(255.0)
         
         return UIColor(red: r, green: g, blue: b, alpha: a)
     }
@@ -56,8 +59,8 @@ class ViewController: UIViewController, UINavigationControllerDelegate, UIImageP
         if let touch = touches.first {
             let position = touch.location(in: view)
             print(position)
-            let screenshot = takeScreenshot(true)
-            let color = screenshot!.getPixelColor(pos: position)
+            //let screenshot = takeScreenshot(true)
+            let color = imageView.image!.getPixelColor(atLocation: position, withFrameSize: imageView.frame.size)
             print(color)
             debugBox.backgroundColor = color
         }
@@ -74,6 +77,8 @@ class ViewController: UIViewController, UINavigationControllerDelegate, UIImageP
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        debugBox.layer.borderWidth = 5
+        debugBox.layer.borderColor = UIColor.black.cgColor
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
