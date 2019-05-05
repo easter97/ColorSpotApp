@@ -35,6 +35,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate, UIImageP
     
     @IBOutlet weak var imageView: UIImageView!
     
+    @IBOutlet weak var colorLabel: UILabel!
     @IBOutlet weak var debugBox: UIView!
     /// Takes the screenshot of the screen and returns the corresponding image
     ///
@@ -64,9 +65,17 @@ class ViewController: UIViewController, UINavigationControllerDelegate, UIImageP
             print(color)
             debugBox.backgroundColor = color
             print(getColorName(color))
+            self.colorLabel.text = getColorName(color)
         }
     }
-
+    
+    @IBAction func takeNewPhoto(_ sender: Any) {
+        imagePicker =  UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = .camera
+        
+        present(imagePicker, animated: true, completion: nil)
+    }
     @IBAction func takePhoto(_ sender: Any) {
         imagePicker =  UIImagePickerController()
         imagePicker.delegate = self
@@ -80,6 +89,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate, UIImageP
         // Do any additional setup after loading the view, typically from a nib.
         debugBox.layer.borderWidth = 5
         debugBox.layer.borderColor = UIColor.black.cgColor
+        imageView.clipsToBounds = true
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -100,10 +110,12 @@ class ViewController: UIViewController, UINavigationControllerDelegate, UIImageP
         color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
         color.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
         
+        hue=hue*360
         let rgDif: CGFloat = abs(red - green) * 256
         let gbDif: CGFloat = abs(green - blue) * 256
         let brDif: CGFloat = abs(blue - red) * 256
-        
+        print(hue)
+        print(saturation)
         if (hue == 0 || saturation <= 0.01 ||
             (rgDif < 15 && gbDif < 15 && brDif < 15)
             ) {
@@ -117,13 +129,15 @@ class ViewController: UIViewController, UINavigationControllerDelegate, UIImageP
             }
         } else if (0 < hue && hue <= 18) {
             colorName = "Red";
-        } else if (19 <= hue && hue <= 42) {
+        } else if (19 <= hue && hue <= 34 && saturation <= 0.83) {
+            colorName = "Brown";
+        } else if (19 <= hue && hue <= 34) {
             colorName = "Orange";
-        } else if (42 <= hue && hue <= 70) {
+        }else if (35 <= hue && hue <= 45) {
             colorName = "Yellow";
-        } else if (71 <= hue && hue <= 79) {
+        } else if (45 <= hue && hue <= 58) {
             colorName = "Lime";
-        } else if (80 <= hue && hue <= 163) {
+        } else if (59 <= hue && hue <= 163) {
             colorName = "Green";
         } else if (164 <= hue && hue <= 193) {
             colorName = "Cyan";
