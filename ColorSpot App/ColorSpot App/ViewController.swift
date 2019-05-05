@@ -69,6 +69,19 @@ class ViewController: UIViewController, UINavigationControllerDelegate, UIImageP
         }
     }
     
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let position = touch.location(in: view)
+            print(position)
+            //let screenshot = takeScreenshot(true)
+            let color = imageView.image!.getPixelColor(atLocation: position, withFrameSize: imageView.frame.size)
+            print(color)
+            debugBox.backgroundColor = color
+            print(getColorName(color))
+            self.colorLabel.text = getColorName(color)
+        }
+    }
+    
     @IBAction func takeNewPhoto(_ sender: Any) {
         imagePicker =  UIImagePickerController()
         imagePicker.delegate = self
@@ -96,6 +109,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate, UIImageP
         imagePicker.dismiss(animated: true, completion: nil)
         imageView.image = info[.originalImage] as? UIImage
     }
+    
     func getColorName(_ color: UIColor) -> String
     {
         var colorName :String = "White"
